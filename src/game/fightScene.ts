@@ -157,9 +157,9 @@ export class FightScene {
       },
       true,
     );
-    const mat = createPS1Material({ map: tex, uvScale: [12, 4] });
-    const floor = new THREE.Mesh(new THREE.PlaneGeometry(40, 14, 10, 4).rotateX(-Math.PI / 2), mat);
-    floor.position.z = -2;
+    const mat = createPS1Material({ map: tex, uvScale: [16, 12] });
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(60, 44, 14, 10).rotateX(-Math.PI / 2), mat);
+    floor.position.z = 4;
     this.scene.add(floor);
     // gradient backdrop
     const sky = this.opts.sky;
@@ -325,7 +325,10 @@ export class FightScene {
       this.playClip(att, 'superFlash');
       att.view.setGlow(0.5, 0xff9a20);
       const head = att.view.headWorld(new THREE.Vector3());
-      this.camGoalPos.set(head.x + att.facing * 1.4, head.y + 0.05, 1.9);
+      head.y -= 0.12;
+      // in front of the face, a little toward the gameplay camera
+      const back = this.aspect < 1 ? 1.75 : 1.45;
+      this.camGoalPos.set(head.x + att.facing * back * 0.8, head.y + 0.1, head.z + back * 0.6);
       this.camGoalLook.copy(head);
       audio.sfx('super');
       const lines = att.side.def.superLines ?? att.side.def.introLines;
