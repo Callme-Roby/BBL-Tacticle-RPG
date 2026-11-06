@@ -98,14 +98,12 @@ export const CAMPAIGN: Chapter[] = [
     ],
     enemies: [
       E('billel', 'gourou', 4, ['patch_notes', 'canette'], { leader: true, ai: 'hold', name: 'FAUX BILLEL' }),
-      E('matteo', 'mur', 2, ['manche_balai'], { ai: 'guard' }),
-      E('elies', 'mur', 2, ['manche_balai']),
+      E('matteo', 'mur', 1, ['manche_balai'], { ai: 'guard' }),
+      E('elies', 'mur', 1, ['manche_balai']),
       E('aroa', 'bagarreur', 2, ['epee_rouillee']),
-      E('rayan', 'bagarreur', 2, ['epee_rouillee']),
       E('thomas', 'filou', 2, ['couteau_kebab']),
       E('enola', 'tireur', 2, ['arc_plastique']),
       E('isis', 'cogneur', 2, ['hachette']),
-      E('alex', 'pilote', 2, ['manche_balai']),
     ],
     intro: [
       ['narrateur', 'Le quartier. Le kebab de la bande est encerclé.'],

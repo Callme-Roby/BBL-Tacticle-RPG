@@ -2,7 +2,7 @@
  * Balance report: npm run balance [-- duels=60 games=200 archetypes=40]
  * Writes BALANCE.md (tables) and prints a summary.
  */
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { CLASSES } from '../src/rules/classes';
 import { PROFILES } from '../src/rules/profiles';
 import { FORMATS } from '../src/rules/teams';
@@ -62,12 +62,15 @@ if (!only || only === 'arch') {
   const by = (pred: (id: string) => boolean) => ids.filter(pred);
   const fill = (core: string[]) => [...core, ...ids.filter((i) => !core.includes(i))].slice(0, 10);
   const arch: [string, string[]][] = [
-    ['Les costauds', fill(by((i) => ['cogneur', 'mur'].includes(PROFILES[i].cls)))],
-    ['Les rapides', fill(by((i) => ['lame', 'filou', 'bagarreur', 'pilote', 'livreur'].includes(PROFILES[i].cls)))],
-    ['Les tireurs', fill(by((i) => ['tireur', 'pyromane', 'gourou', 'infirmier'].includes(PROFILES[i].cls)))],
-    ['Sans soigneur', ids.filter((i) => i !== 'benji').slice(0, 10)],
-    ['Les 10 meilleurs en duel', ['zia', 'aroa', 'rayan', 'isis', 'dylan', 'mihai', 'thomas', 'clement', 'billel', 'enola']],
+    ['Les costauds', ['dylan', 'isis', 'elies', 'matteo', 'rayan', 'aroa', 'mihai', 'alex', 'clement', 'benji']],
+    ['Les rapides', ['zia', 'thomas', 'aroa', 'rayan', 'mihai', 'alex', 'enola', 'clement', 'billel', 'benji']],
+    ['Les tireurs', ['clement', 'billel', 'enola', 'benji', 'elies', 'matteo', 'dylan', 'isis', 'mihai', 'alex']],
+    ['Sans soigneur', ['dylan', 'isis', 'elies', 'matteo', 'rayan', 'aroa', 'zia', 'thomas', 'mihai', 'clement']],
+    ['Tout au corps à corps', ['dylan', 'isis', 'elies', 'matteo', 'rayan', 'aroa', 'zia', 'thomas', 'mihai', 'alex']],
+    ['Les 10 meilleurs en duel', ['clement', 'elies', 'dylan', 'billel', 'alex', 'rayan', 'isis', 'matteo', 'mihai', 'aroa']],
   ];
+  void by;
+  void fill;
   for (const [label, team] of arch) {
     const r = archetypeVsRandom(team, FORMATS[1], ARCH);
     console.log(`[archetype] ${label}: ${pct(r)}`);
@@ -78,4 +81,18 @@ if (!only || only === 'arch') {
 
 md += `_Simulation : ${((Date.now() - t0) / 1000).toFixed(0)} s._\n`;
 if (!only) writeFileSync('BALANCE.md', md);
-else console.log(md);
+else {
+  // replace just that section of the existing report
+  const titles: Record<string, string> = { duels: '## Duels', teams: '## Matchs 10 contre 10', arch: '## Équipes-types' };
+  const head = titles[only];
+  const part = md.slice(md.indexOf(head), md.indexOf('_Simulation'));
+  let cur = readFileSync('BALANCE.md', 'utf8');
+  const a = cur.indexOf(head);
+  if (a >= 0) {
+    const nexts = Object.values(titles).map((t) => cur.indexOf(t, a + 1)).filter((i) => i > a);
+    const end = nexts.length ? Math.min(...nexts) : cur.indexOf('_Simulation');
+    cur = cur.slice(0, a) + part + cur.slice(end);
+    writeFileSync('BALANCE.md', cur);
+  }
+  console.log(part);
+}
