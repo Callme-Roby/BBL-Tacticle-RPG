@@ -63,6 +63,7 @@ import { SUPPORT_TALKS } from '../data/supportTalks';
 import { h, uiRoot } from '../ui/dom';
 import { goTitle, goResults } from './flow';
 import { trueHit } from '../rules/rng';
+import { stateHash } from '../net/session';
 
 type Mode =
   | { m: 'idle' }
@@ -109,6 +110,8 @@ export class BattleScreen implements Screen {
   private focusIdx = 0;
   /** fast-forward of the other side's turn (tap the screen) */
   private ff = false;
+  /** online: checksums received from the other side (log length -> hash) */
+  private hashChecks = new Map<number, string>();
 
   constructor(
     private app: App,
@@ -148,10 +151,29 @@ export class BattleScreen implements Screen {
     this.layout();
     void this.load();
     if (this.net) {
-      this.net.onMessage = (m) => {
+      const net = this.net;
+      net.getState = () => this.state;
+      net.onMessage = (m) => {
         if (m.t === 'act') this.remoteQueue.push(m.a as Action);
+        else if (m.t === 'hash' && typeof m.n === 'number' && m.h) {
+          this.hashChecks.set(m.n, m.h);
+          this.checkHash();
+        } else if (m.t === 'state' && m.state) {
+          // resynchronised from the host
+          this.state = m.state as BattleState;
+          this.remoteQueue.length = 0;
+          this.syncSprites();
+          this.mode = { m: 'idle' };
+          this.render();
+          this.toast('Partie resynchronisée', 1500);
+        } else if (m.t === 'leave') {
+          this.toast('Ton pote a quitté la partie.', 4000);
+        } else if (m.t === 'lost') {
+          this.toast('Connexion perdue. Retour au menu dans quelques secondes…', 4000);
+          setTimeout(() => goTitle(), 4500);
+        }
       };
-      this.net.onStatus = (st) => {
+      net.onStatus = (st) => {
         if (st === 'closed') this.toast('Connexion perdue… reconnexion en cours', 4000);
         if (st === 'open') this.toast('Reconnecté !', 1500);
       };
@@ -344,7 +366,11 @@ export class BattleScreen implements Screen {
       }
     }
     this.log.push(a);
-    if (mine && this.net) this.net.send({ t: 'act', a });
+    if (mine && this.net) {
+      this.net.send({ t: 'act', a });
+      if (a.k === 'end') this.net.sendHash?.(stateHash(this.state));
+    }
+    this.checkHash();
     this.save();
     this.mode = { m: 'busy' };
     this.render();
@@ -354,6 +380,17 @@ export class BattleScreen implements Screen {
     this.syncSprites();
     if (this.state.winner !== null) return this.finish();
     this.render();
+  }
+
+  /** online: same battle on both sides? (compared at the same number of actions) */
+  private checkHash() {
+    const h = this.hashChecks.get(this.log.length);
+    if (h === undefined) return;
+    this.hashChecks.delete(this.log.length);
+    if (h !== stateHash(this.state) && this.info.localTeam === 1) {
+      console.warn('[en ligne] désynchronisation : récupération de la partie de l’hôte');
+      this.net?.requestState?.();
+    }
   }
 
   private save() {

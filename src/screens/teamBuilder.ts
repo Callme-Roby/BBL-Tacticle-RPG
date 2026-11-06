@@ -73,7 +73,7 @@ export class TeamBuilder {
       { class: 'tb t' + team },
       h('div', { class: 'tb-head' }, h('b', null, title), this.count, rnd, clear),
       this.list,
-      h('div', { class: 'tb-hint' }, 'Touche un pote pour l’ajouter (le même pote peut être dans les deux équipes). ★ = chef.'),
+      h('div', { class: 'tb-hint' }, 'Touche un pote pour l’ajouter ou le retirer (le même pote peut être dans les deux équipes, avec d’autres couleurs). ★ = chef.'),
       this.grid.el,
     );
     this.renderList();
@@ -89,6 +89,14 @@ export class TeamBuilder {
   }
 
   private add(def: FighterDef) {
+    // one copy of a friend per team: a second tap removes it
+    const at = this.picks.findIndex((p) => p.defId === def.id);
+    if (at >= 0) {
+      this.picks.splice(at, 1);
+      audio.sfx('cancel', { volume: 0.6 });
+      this.renderList();
+      return;
+    }
     if (this.full) {
       audio.sfx('cancel');
       return;
@@ -123,7 +131,7 @@ export class TeamBuilder {
     }
     for (const d of pool) {
       if (out.length >= TEAM_SIZE) break;
-      take(d);
+      if (!out.some((p) => p.defId === d.id)) take(d);
     }
     // the chef: a sturdy one
     const best = out.reduce((a, b) => ((PROFILES[b.defId]?.base.hp ?? 18) > (PROFILES[a.defId]?.base.hp ?? 18) ? b : a), out[0]);
@@ -143,6 +151,8 @@ export class TeamBuilder {
 
   private renderList() {
     this.count.textContent = `${this.picks.length}/${TEAM_SIZE}`;
+    // picked friends lit in the catalogue
+    this.roster.forEach((d, i) => this.grid?.cells[i]?.classList.toggle(this.team === 0 ? 'p1' : 'p2', this.picks.some((p) => p.defId === d.id)));
     if (!this.picks.some((p) => p.leader) && this.picks[0]) this.picks[0].leader = true;
     const rows = this.picks.map((p, i) => {
       const cls = CLASSES[classFor(p.defId, this.format.promoted, p.promo, p.lab)];

@@ -1337,3 +1337,42 @@
   min-width: 34px;
   min-height: 56px;
 }
+
+/* ------------------------------------------------------------------ online lobby */
+.room-code {
+  display: block;
+  margin-top: 6px;
+  font: 28px var(--arcade);
+  letter-spacing: 6px;
+  color: var(--orange2);
+}
+.lobby-opts {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 9px;
+  line-height: 1.5;
+}
+.lobby-opts canvas {
+  width: 48px;
+  image-rendering: pixelated;
+  border-radius: 4px;
+}
+.chips.wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.lobby-status {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  width: min(720px, 100%);
+  font-size: 9px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--panel);
+}
+.lobby-status .ok {
+  color: #6aff8a;
+}

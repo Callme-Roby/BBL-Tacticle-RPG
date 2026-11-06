@@ -78,7 +78,11 @@ export function unitLook(info: MatchInfo | null, u: Unit): FighterDef {
 /** what the battle screen needs from an online connection (src/net/session.ts) */
 export interface MatchLink {
   send(m: { t: 'act'; a: Action }): void;
-  onMessage: ((m: { t: string; a?: unknown }) => void) | null;
+  onMessage: ((m: { t: string; a?: unknown; state?: unknown; n?: number; h?: string }) => void) | null;
   onStatus: ((s: 'open' | 'closed') => void) | null;
   close(): void;
+  /** desync detection (online sessions) */
+  sendHash?(h: string): void;
+  requestState?(): void;
+  getState?: (() => unknown) | null;
 }

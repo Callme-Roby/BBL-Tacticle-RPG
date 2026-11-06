@@ -1,102 +1,53 @@
 // PeerJS (+ its WebRTC shims) is only downloaded when a game goes online
 import type { DataConnection, Peer, PeerOptions } from 'peerjs';
 import type { FighterDef } from '../data/roster';
-/** (online tournaments of BBL FIGHTERZ: not used by BBL TACTICS) */
-type Tournament = unknown;
 
 /**
- * Peer-to-peer link between two browsers (WebRTC data channel via PeerJS).
- * The free public PeerJS broker is only used for the initial handshake; the
- * game traffic then goes directly between the two players.
+ * Peer-to-peer link between two browsers (WebRTC data channel via PeerJS),
+ * from BBL FIGHTERZ. The free public PeerJS broker is only used for the
+ * initial handshake; the game traffic then goes directly between the players.
  *
- * Two channels share the connection: PeerJS's reliable ordered one for
- * everything, plus a lossy unordered one for the fight inputs and pings (a lost
- * packet must not hold back the ones behind it: the rollback session repeats the
- * unacknowledged inputs in every packet anyway).
+ * BBL TACTICS is turn-based: only the players' actions travel (the battle
+ * engine is deterministic, both browsers compute the same results). The host
+ * keeps its room open, so a guest whose connection drops can come back
+ * (`NetLink.join` again) and the two sides resend the actions the other missed.
  */
 
-/** bump when the messages or the simulation change (both browsers must run the same game) */
-export const NET_VERSION = 'bbl-10';
-const ID_PREFIX = 'bblfighterz-';
-/** online tournaments: the organiser's peer id is ID_PREFIX + TN_TAG + code */
-const TN_TAG = 't';
+/** bump when the messages or the rules change (both browsers must run the same game) */
+export const NET_VERSION = 'bbltactics-1';
+const ID_PREFIX = 'bbltactics-';
 
-/** A participant as seen in the online tournament lobby. */
-export interface TnEntry {
+/** a team as sent in the lobby */
+export interface NetTeam {
   name: string;
-  cpu: boolean;
-  /** chosen fighter (a built-in roster id, or a full custom definition) */
-  fighterId: string;
-  def?: FighterDef;
-  /** chosen assist (a built-in roster id; '' = « HASARD »: drawn from the tournament seed at the start) */
-  assistId: string;
-  /** connected right now (CPU entries are always "online") */
-  online: boolean;
-}
-
-/** Everything needed to play / watch one tournament match (identical on every browser). */
-export interface TnMatch {
-  /** unique per attempt: "round.match.replays" */
-  key: string;
-  r: number;
-  m: number;
-  /** participant indices (left / right) */
-  a: number;
-  b: number;
-  p1: FighterDef;
-  p2: FighterDef;
-  /** each side's assist (every browser creates the game with these) */
-  assists: [FighterDef | null, FighterDef | null];
-  stageId: string;
-  rounds: number;
-  difficulty: 'easy' | 'normal' | 'hard';
-  seed: number;
-  title: string;
-  names: [string, string];
-  cpu: [boolean, boolean];
-  /** participant index of the browser that runs the fight and streams it (-1 = the organiser, CPU vs CPU) */
-  runner: number;
+  picks: { defId: string; name: string; lab?: string; promo: number; leader: boolean }[];
+  /** looks of the lab creations used */
+  looks: FighterDef[];
+  /** this player's support progress (pair key -> {pts, level}) */
+  supports: Record<string, { pts: number; level: 0 | 1 | 2 | 3 }>;
 }
 
 export type NetMsg =
   | { t: 'hello'; version: string; name: string }
-  /** fighter select: my fighter (cursor or locked), then my assist (cursor or locked) */
-  | { t: 'pick'; def: FighterDef | null; locked: boolean; cursor: number; assist: FighterDef | null; assistLocked: boolean; assistCursor: number }
-  | { t: 'stage'; id: string; locked: boolean }
-  /** host → guest: the fight starts (a1 / a2 = assists of P1 / P2, the same on both browsers) */
-  | { t: 'start'; stage: string; p1: FighterDef; p2: FighterDef; a1: FighterDef | null; a2: FighterDef | null; seed: number; rounds: number }
-  /** inputs of frames f.. (b), frame advantage, a = last of your frames I have (contiguous), d = my input delay */
-  | { t: 'in'; f: number; b: number[]; adv: number; a: number; d: number }
-  | { t: 'sum'; f: number; h: number }
-  | { t: 'ready' }
+  /** host → guest: the match options (map, objective, format, fog, first player) */
+  | { t: 'opts'; opts: unknown }
+  /** a player's team (ready = locked) */
+  | { t: 'team'; team: NetTeam | null; ready: boolean }
+  /** host → guest: the battle starts (setup with both teams; the guest plays team 1) */
+  | { t: 'start'; setup: unknown; looks: FighterDef[] }
+  /** an action of the battle, `n` = its index in the battle's log */
+  | { t: 'act'; a: unknown; n: number }
+  /** how many actions I have (after a reconnection: the other side resends the missing ones) */
+  | { t: 'sync'; n: number }
+  /** state checksum after action n (desync detection) */
+  | { t: 'hash'; n: number; h: string }
+  /** guest → host: send me the whole battle; host → guest: here it is */
+  | { t: 'needState' }
+  | { t: 'state'; state: unknown; n: number }
   | { t: 'rematch' }
-  | { t: 'toSelect' }
   | { t: 'leave' }
   | { t: 'ping'; ts: number }
-  | { t: 'pong'; ts: number }
-  // ---- online tournament (organiser = hub, everybody else connects to it)
-  /** guest → organiser: who I am (`token` lets a refreshed page get its slot back) */
-  | { t: 'tnHello'; version: string; name: string; token: string }
-  /** organiser → guest: refused (wrong version, full…) */
-  | { t: 'tnError'; reason: string }
-  /** organiser → guest: lobby / tournament state. `you` = participant index of the receiver (-1 = spectator) */
-  | { t: 'tnLobby'; entries: TnEntry[]; you: number; started: boolean }
-  /** guest → organiser: name / fighter / assist choice (assistId '' = « HASARD ») */
-  | { t: 'tnMe'; name: string; fighterId: string; def?: FighterDef; assistId?: string }
-  /** organiser → all: the bracket (after the start) */
-  | { t: 'tnState'; tour: Tournament; live: TnMatch | null; flash: string }
-  /** organiser → all: a match starts (its two players fight, the others watch) */
-  | { t: 'tnMatch'; match: TnMatch }
-  /** left player → organiser → right player: code of the room of their online fight */
-  | { t: 'tnRoom'; key: string; code: string }
-  /** runner → organiser → spectators: final inputs from frame f (pairs p1, p2 flattened) */
-  | { t: 'tnTv'; key: string; f: number; b: number[] }
-  /** runner → organiser: match result (2 = draw) */
-  | { t: 'tnResult'; key: string; w: 0 | 1 | 2 }
-  /** player → organiser: the match could not be played (disconnection...) */
-  | { t: 'tnAbort'; key: string; reason: string }
-  /** organiser → all: the tournament is over / cancelled */
-  | { t: 'tnEnd'; reason: string };
+  | { t: 'pong'; ts: number };
 
 export type NetListener = (m: NetMsg) => void;
 
@@ -115,10 +66,7 @@ const MSG_BROWSER =
   "Ce navigateur ne gère pas le jeu en ligne : ouvre le lien dans Chrome, Safari ou Firefox (pas dans le navigateur intégré d'une appli).";
 const MSG_BLOCKED =
   'Vos deux réseaux bloquent la connexion directe (fréquent en 4G ou sur un wifi de travail / d’école). Réessayez en wifi à la maison, ou au moins l’un des deux en wifi.';
-const msgNotFound = (tournament: boolean) =>
-  tournament
-    ? "Tournoi introuvable. L'organisateur doit avoir la page du jeu affichée (pas WhatsApp devant) : réessaie dès qu'il y est revenu."
-    : 'Partie introuvable. Ton pote doit avoir la page du jeu affichée (pas WhatsApp devant) : réessaie dès qu’il y est revenu.';
+const msgNotFound = (_tournament: boolean) => 'Partie introuvable. Ton pote doit avoir la page du jeu affichée (pas WhatsApp devant) : réessaie dès qu’il y est revenu.';
 
 /** PeerJS error type of an error event */
 const errType = (e: unknown) => String((e as { type?: string })?.type ?? '');
@@ -177,16 +125,25 @@ export class NetLink {
     return new NetLink(peer, code, true);
   }
 
+  /** host: called when a guest connects again after a drop */
+  onReconnect: (() => void) | null = null;
+
   waitForGuest(): Promise<void> {
     return new Promise((resolve, reject) => {
       // adopted once open: a page waking up may still answer stale attempts that never open
       this.peer.on('connection', (c) => {
         c.on('open', () => {
-          if (this.conn) {
+          if (this.conn && !this.closed) {
             c.close();
             return;
           }
+          // first guest, or the same guest coming back after a drop
+          const again = !!this.conn;
+          this.closed = false;
+          this.fast = null;
+          this.fastOk = false;
           this.attach(c);
+          if (again) this.onReconnect?.();
           resolve();
         });
       });
@@ -206,11 +163,12 @@ export class NetLink {
    * Joins a room / tournament. The other page may be asleep for a moment (the
    * organiser is still in WhatsApp after sending the link): keeps trying for 90 s.
    */
-  static async join(code: string, onStatus?: (s: string) => void, tournament = false): Promise<NetLink> {
+  static async join(code: string, onStatus?: (s: string) => void): Promise<NetLink> {
+    const tournament = false;
     onStatus?.('Connexion au serveur de mise en relation…');
     const peer = await openPeer();
-    const target = ID_PREFIX + (tournament ? TN_TAG : '') + code;
-    const who = tournament ? "l'organisateur" : 'ton pote';
+    const target = ID_PREFIX + code;
+    const who = 'ton pote';
     const giveUp = performance.now() + 90000;
     let blocked = 0;
     let last: 'notFound' | 'blocked' | null = null;
@@ -280,7 +238,7 @@ export class NetLink {
     try {
       const pc = c.peerConnection;
       if (!pc) return;
-      const dc = pc.createDataChannel('bbl-in', { negotiated: true, id: FAST_CHANNEL_ID, ordered: false, maxRetransmits: 0 });
+      const dc = pc.createDataChannel('bbltactics-in', { negotiated: true, id: FAST_CHANNEL_ID, ordered: false, maxRetransmits: 0 });
       dc.onmessage = (e) => {
         this.fastOk = true;
         try {
@@ -374,60 +332,6 @@ export class NetLink {
         /* ignore */
       }
     }, 100);
-  }
-}
-
-/**
- * Online tournament organiser: one peer that accepts every participant's
- * connection (star network). Each guest gets its own NetLink.
- */
-export class NetHub {
-  private closed = false;
-  private constructor(
-    private peer: Peer,
-    readonly code: string,
-  ) {}
-
-  static async host(onStatus?: (s: string) => void): Promise<NetHub> {
-    const code = randomCode();
-    onStatus?.('Connexion au serveur de mise en relation…');
-    const peer = await openPeer(ID_PREFIX + TN_TAG + code);
-    return new NetHub(peer, code);
-  }
-
-  /** Called for every guest once its connection is open. */
-  onGuest(cb: (link: NetLink) => void) {
-    this.peer.on('connection', (c) => {
-      if (this.closed) {
-        c.close();
-        return;
-      }
-      // a link only for connections that open (a page waking up may answer stale attempts)
-      c.on('open', () => {
-        if (!this.closed) cb(NetLink.fromConnection(this.peer, c));
-      });
-    });
-  }
-
-  /** The broker connection dropped (guests already connected stay connected). */
-  onError(cb: (e: unknown) => void) {
-    this.peer.on('error', cb);
-  }
-
-  /** Called when new guests can / can't reach the tournament any more (phone page put to sleep…). */
-  onBroker(cb: (ok: boolean) => void) {
-    watchBroker(this.peer, cb);
-  }
-
-  close() {
-    this.closed = true;
-    setTimeout(() => {
-      try {
-        this.peer.destroy();
-      } catch {
-        /* ignore */
-      }
-    }, 300);
   }
 }
 
@@ -619,21 +523,6 @@ export function roomFromUrl(): string | null {
   const q = new URLSearchParams(location.search);
   const r = q.get('room');
   return r && /^[a-z0-9]{4,12}$/.test(r) ? r : null;
-}
-
-/** `?tournoi=<code>` invitation of an online tournament */
-export function tournamentFromUrl(): string | null {
-  const q = new URLSearchParams(location.search);
-  const r = q.get('tournoi');
-  return r && /^[a-z0-9]{4,12}$/.test(r) ? r : null;
-}
-
-export function tournamentInviteUrl(code: string): string {
-  const u = new URL(location.href);
-  u.search = '';
-  u.hash = '';
-  u.searchParams.set('tournoi', code);
-  return u.toString();
 }
 
 export function inviteUrl(code: string): string {

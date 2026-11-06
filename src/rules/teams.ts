@@ -14,7 +14,7 @@ export interface Format {
 }
 
 export const FORMATS: Format[] = [
-  { id: 'recrues', name: 'RECRUES', desc: 'Niveau 3, armes de base.', level: 3, promoted: false },
+  { id: 'recrues', name: 'RECRUES', desc: 'Niveau 5, armes de base et premières armes spéciales.', level: 5, promoted: false },
   { id: 'confirmes', name: 'CONFIRMÉS', desc: 'Niveau 10, armes avancées, un Diplôme BBL pour promouvoir.', level: 10, promoted: false },
   { id: 'elite', name: 'ÉLITE', desc: 'Classes avancées niveau 5, armes de luxe.', level: 5, promoted: true },
 ];
