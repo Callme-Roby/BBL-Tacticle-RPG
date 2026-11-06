@@ -110,6 +110,7 @@ export class BattleScreen implements Screen {
   private focusIdx = 0;
   /** fast-forward of the other side's turn (tap the screen) */
   private ff = false;
+  private frameNo = 0;
   /** online: checksums received from the other side (log length -> hash) */
   private hashChecks = new Map<number, string>();
 
@@ -303,7 +304,13 @@ export class BattleScreen implements Screen {
     if (!this.ready) return;
     this.rig.update(dt);
     this.board.update(dt);
-    for (const sp of this.sprites.values()) sp.update(dt * (settings.walk === 2 ? 1.6 : 1) * (this.ff ? 2.5 : 1), this.rig.camera);
+    this.frameNo++;
+    let k = 0;
+    for (const sp of this.sprites.values()) {
+      // idle skeletons every other frame, alternating (the moving ones every frame)
+      const animate = !sp.group.visible ? false : (this.frameNo + k++) % 2 === 0;
+      sp.update(dt * (settings.walk === 2 ? 1.6 : 1) * (this.ff ? 2.5 : 1), this.rig.camera, animate);
+    }
     this.applyLighting();
     this.app.pipeline.render(this.scene, this.rig.camera, this.board.sky);
     this.drive(dt);

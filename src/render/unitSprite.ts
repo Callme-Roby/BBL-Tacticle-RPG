@@ -164,7 +164,14 @@ export class UnitSprite {
     this.view.hitFlash(color, amount);
   }
 
-  update(dt: number, camera: THREE.Camera) {
+  /** time not yet given to the idle animation (see `animate`) */
+  private animAcc = 0;
+
+  /**
+   * @param animate false = skip the skeleton update this frame (idle units are
+   * animated every other frame, in turns: half the skinning work on phones)
+   */
+  update(dt: number, camera: THREE.Camera, animate = true) {
     this.time += dt;
     const g = this.group.position;
     let moving = false;
@@ -204,7 +211,11 @@ export class UnitSprite {
     if (this.hover) this.view.root.position.y = this.hover + 0.04 + bob;
     const clip = moving && this.look !== 'horse' && this.look !== 'flier' ? 'walkF' : this.clip;
     const frame = moving ? this.time * 90 : (this.time - this.clipStart) * 60;
-    this.view.pose(clip, frame, dt * 60, clip === 'walkF' ? 'walk' : clip + this.clipStart);
+    this.animAcc += dt;
+    if (animate || moving) {
+      this.view.pose(clip, frame, this.animAcc * 60, clip === 'walkF' ? 'walk' : clip + this.clipStart);
+      this.animAcc = 0;
+    }
     // billboard bar
     this.bar.quaternion.copy(camera.quaternion);
     if (this.crown) this.crown.rotation.y += dt * 2;

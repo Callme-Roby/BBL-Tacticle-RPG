@@ -9,6 +9,8 @@ import { createPS1Material, makeCanvasTexture, PS1Globals, type PS1Material } fr
 import { STRIKE_FRAME } from '../render/tacticsPoses';
 import { TEAM_COLORS } from '../render/unitSprite';
 import { buildHorse, buildSaucer, buildWeapon, buildArmor, disposeWeapon } from '../render/weapons';
+import { buildProp, disposeProp } from '../render/props';
+import { CRIT_MOVES } from '../data/critMoves';
 import type { ClassLook } from '../rules/classes';
 import type { Strike } from '../rules/combat';
 import type { ItemDef } from '../rules/items';
@@ -320,7 +322,7 @@ export class FightScene {
   private async strike(att: Actor, def: Actor, st: Strike) {
     const w = att.side.weapon;
     const melee = this.opts.dist < 2 && w?.type !== 'bow' && !(w && (w.type === 'anima' || w.type === 'light' || w.type === 'dark'));
-    // ---- critical: BBL MAX style close-up
+    // ---- critical: a short BBL MAX (close-up, signature prop and effect, the friend's line)
     if (st.crit && this.opts.critFx && !this.skip) {
       this.playClip(att, 'superFlash');
       att.view.setGlow(0.5, 0xff9a20);
@@ -331,11 +333,29 @@ export class FightScene {
       this.camGoalPos.set(head.x + att.facing * back * 0.8, head.y + 0.1, head.z + back * 0.6);
       this.camGoalLook.copy(head);
       audio.sfx('super');
+      const sig = CRIT_MOVES[att.side.def.id];
+      const props: THREE.Object3D[] = [];
+      if (sig?.prop && sig.bone) {
+        const bones = sig.pair ? ['handL', 'handR'] : [sig.bone];
+        for (const b of bones) {
+          const o = buildProp(sig.prop, att.side.def.headScale ?? 1.15);
+          if (sig.pos) o.position.set(...sig.pos);
+          att.view.model.bones[b as 'handL'].add(o);
+          props.push(o);
+        }
+        if (att.weapon && (sig.bone === 'handR' || sig.pair)) att.weapon.visible = false;
+      }
+      for (const fx of sig?.fx ?? ['shine']) this.effects.cine(fx, head.clone(), 1, att.facing);
       const lines = att.side.def.superLines ?? att.side.def.introLines;
-      const line = lines[Math.floor(Math.random() * lines.length)] ?? 'CRITIQUE !';
-      this.banner('CRITIQUE !', line);
+      const line = lines[Math.floor(Math.random() * lines.length)] ?? '';
+      this.banner(sig?.name ?? 'CRITIQUE !', line ? `CRITIQUE ! « ${line} »` : 'CRITIQUE !');
       void audio.say(line, { lang: att.side.def.voice?.lang ?? 'fr-FR', pitch: att.side.def.voice?.pitch, rate: (att.side.def.voice?.rate ?? 1) * 1.1 });
-      await wait(this.ms(900));
+      await wait(this.ms(1000));
+      for (const o of props) {
+        o.removeFromParent();
+        disposeProp(o);
+      }
+      if (att.weapon) att.weapon.visible = true;
       att.view.setGlow(0);
       this.baseCam();
     }

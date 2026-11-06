@@ -21,42 +21,10 @@ html.touch-ui .btn:hover {
 }
 
 /* select screen: VALIDER (touch), blue for J1, red for J2 */
-.btn.sel-ok {
-  min-width: 200px;
-  text-align: center;
-  border-color: #3aa0ff;
-  background: linear-gradient(180deg, #9fd2ff, #3aa0ff);
-  color: #001a33;
-}
-
-.btn.sel-ok.p2 {
-  border-color: var(--red);
-  background: linear-gradient(180deg, #ff9a9a, var(--red));
-  color: #2a0000;
-}
-
-.btn.sel-ok:hover {
-  border-color: #fff;
-  background: linear-gradient(180deg, #c4e3ff, #3aa0ff);
-}
-
-.btn.sel-ok.p2:hover {
-  background: linear-gradient(180deg, #ffc0c0, var(--red));
-}
 
 /* options: the two controls tables */
-.options-keys-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-}
 
 /* stage select: C'EST PARTI ! (touch) */
-.stage-go {
-  min-width: 200px;
-  text-align: center;
-}
 
 /* ------------------------------------------------------------------ */
 /* small screens, both orientations                                    */
@@ -114,10 +82,7 @@ html.touch-ui .btn:hover {
   }
 
   /* stage select */
-  .stage-screen .footer-hint {
-    position: static;
-    padding: 0;
-  }
+  
 }
 
 /* ------------------------------------------------------------------ */
@@ -145,10 +110,7 @@ html.touch-ui .btn:hover {
     margin-top: 4px;
   }
 
-  .title-hint {
-    font-size: 9px;
-    line-height: 1.7;
-  }
+  
 
   /* link + COPIER (+ PARTAGER): the field takes a whole row, the buttons share the next one */
   .share {
@@ -195,198 +157,79 @@ html.touch-ui .btn:hover {
   }
 
   /* --- fighter select: header · 3D fighter(s) · names · grid · VALIDER --- */
-  .pick-screen {
-    grid-template-columns: minmax(0, 1fr);
-    row-gap: 8px;
-    padding: max(8px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-  }
+  
 
-  .pick-screen .top {
-    min-height: 36px;
-    padding-left: 96px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 3px;
-    text-align: left;
-  }
+  
 
-  .pick-screen .top .h1 {
-    font-size: clamp(13px, 4.1vw, 18px);
-    text-align: left;
-    text-shadow: 2px 2px 0 #000;
-  }
+  
 
-  .pick-screen .top .title-hint {
-    font-size: 7px;
-    line-height: 1.3;
-    text-align: left;
-  }
+  
 
-  .pick-screen .names {
-    align-items: flex-start;
-    gap: 10px;
-  }
+  
 
-  .pick-screen:not(.duo) .names {
-    justify-content: center;
-    text-align: center;
-  }
+  
 
-  .pick-screen .pname {
-    max-width: 50%;
-    font-size: clamp(20px, 6.6vw, 28px);
-    text-shadow: 3px 3px 0 #000;
-  }
+  
 
-  .pick-screen:not(.duo) .pname {
-    max-width: 100%;
-  }
+  
 
-  .pick-screen .pname .ttl {
-    font-size: 8px;
-    line-height: 1.4;
-    margin-top: 5px;
-  }
+  
 
-  .pick-screen .lock {
-    margin-top: 3px;
-  }
+  
 
   /* profile: badge + line, one stat per row */
-  .pick-screen .profile {
-    gap: 3px;
-    margin-top: 5px;
-  }
+  
 
-  .pick-screen .pf-head {
-    gap: 5px;
-  }
+  
 
-  .pick-screen .pf-badge {
-    font-size: 9px;
-    padding: 1px 5px;
-    box-shadow: 1px 1px 0 #000;
-  }
+  
 
-  .pick-screen .pf-line {
-    font-size: 7px;
-    line-height: 1.4;
-  }
+  
 
-  .pick-screen .pf-line small {
-    display: block;
-    font-size: 6px;
-  }
+  
 
-  .pick-screen .pf-model::before {
-    content: none;
-  }
+  
 
-  .pick-screen .pf-stats {
-    grid-template-columns: auto;
-    gap: 2px;
-  }
+  
 
-  .pick-screen .pf-k {
-    font-size: 6px;
-  }
+  
 
-  .pick-screen .pf-bar i {
-    width: 7px;
-    height: 5px;
-  }
+  
 
-  .pick-screen .pf-cmd {
-    font-size: 6px;
-    padding: 1px 4px;
-  }
+  
 
-  .pick-screen .sel-assist {
-    margin-top: 6px;
-    gap: 6px;
-  }
+  
 
-  .pick-screen .sel-assist .aph {
-    width: 26px;
-    height: 33px;
-    font-size: 14px;
-  }
+  
 
-  .pick-screen .sel-assist b {
-    font-size: 11px;
-  }
+  
 
-  .pick-screen .sel-assist small,
-  .pick-screen .sel-assist .ak {
-    font-size: 6px;
-  }
+  
 
-  .pick-screen .bottom {
-    gap: 7px;
-  }
+  
 
-  .pick-screen .grid {
-    grid-template-columns: repeat(5, minmax(0, 64px));
-    gap: 5px;
-    padding: 6px;
-    max-width: 100%;
-    max-height: 46vh;
-    overflow-y: auto;
-    touch-action: pan-y;
-  }
+  
 
-  .pick-screen .cell {
-    width: auto;
-    height: auto;
-    aspect-ratio: 4 / 5;
-  }
+  
 
-  .pick-screen .cell.special {
-    font-size: 26px;
-  }
+  
 
-  .pick-screen .sel-hint {
-    font-size: 8px;
-    line-height: 1.5;
-  }
+  
 
-  .btn.sel-ok {
-    width: min(360px, 100%);
-    padding: 13px 12px;
-    font-size: 11px;
-  }
+  
 
   /* --- stage select: 2 × 2 cards --- */
-  .stage-screen {
-    gap: 10px;
-  }
+  
 
-  .stages {
-    gap: 10px;
-    width: 100%;
-  }
+  
 
-  .stage-card,
-  .stage-card:hover {
-    width: calc(50% - 5px);
-  }
+  
 
-  .stage-card .lbl {
-    padding: 6px;
-    font-size: 9px;
-  }
+  
 
-  .stage-card .lbl small {
-    font-size: 7px;
-    margin-top: 4px;
-    line-height: 1.4;
-  }
+  
 
-  .stage-go {
-    width: min(360px, 100%);
-    padding: 13px 12px;
-  }
+  
 
   /* --- options: one scrolling column --- */
   .options {
@@ -394,27 +237,17 @@ html.touch-ui .btn:hover {
     gap: 12px;
   }
 
-  .options-keys-wrap {
-    width: 100%;
-    gap: 12px;
-  }
+  
 
   .options-screen .panel {
     padding: 12px;
   }
 
-  .controls-table {
-    font-size: 8px;
-    line-height: 1.8;
-  }
+  
 
-  .controls-table td {
-    padding: 3px 4px;
-  }
+  
 
-  .controls-table td:first-child {
-    width: 38%;
-  }
+  
 
   /* --- lab: 3D preview on top, the form scrolls below --- */
   .lab {
@@ -465,10 +298,7 @@ html.touch-ui .btn:hover {
     margin-top: 3px;
   }
 
-  .title-hint {
-    font-size: 9px;
-    line-height: 1.6;
-  }
+  
 
   /* --- title: logo on the left, menu on the right --- */
   .screen.title:not(.press) {
@@ -526,211 +356,83 @@ html.touch-ui .btn:hover {
   }
 
   /* --- fighter select: title on top, names in the corners, fighters beside the grid --- */
-  .pick-screen {
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-    grid-template-rows: auto auto minmax(0, 1fr);
-    column-gap: 8px;
-    row-gap: 4px;
-    padding: max(6px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(6px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
-  }
+  
 
-  .pick-screen .top {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    min-height: 40px;
-    padding: 0 96px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 2px;
-  }
+  
 
-  .pick-screen .top .h1 {
-    font-size: 16px;
-    text-shadow: 2px 2px 0 #000;
-  }
+  
 
-  .pick-screen .top .title-hint {
-    font-size: 7px;
-    line-height: 1.3;
-  }
+  
 
-  .pick-screen .names {
-    display: contents;
-  }
+  
 
-  .pick-screen .pname {
-    font-size: clamp(16px, 3vw, 24px);
-    text-shadow: 3px 3px 0 #000;
-    min-width: 0;
-    overflow-wrap: anywhere;
-  }
+  
 
-  .pick-screen .pname.p1 {
-    grid-column: 1;
-    grid-row: 2;
-  }
+  
 
-  .pick-screen .pname.p2 {
-    grid-column: 3;
-    grid-row: 2;
-  }
+  
 
-  .pick-screen .pname .ttl {
-    font-size: 7px;
-    line-height: 1.4;
-    margin-top: 4px;
-  }
+  
 
-  .pick-screen .lock {
-    font-size: 8px;
-    margin-top: 2px;
-  }
+  
 
   /* profile: compact, stats in two columns */
-  .pick-screen .profile {
-    gap: 3px;
-    margin-top: 4px;
-  }
+  
 
-  .pick-screen .pf-head {
-    gap: 5px;
-  }
+  
 
-  .pick-screen .pf-badge {
-    font-size: 9px;
-    padding: 1px 5px;
-    box-shadow: 1px 1px 0 #000;
-  }
+  
 
-  .pick-screen .pf-line {
-    font-size: 7px;
-    line-height: 1.4;
-  }
+  
 
-  .pick-screen .pf-line small {
-    display: block;
-    font-size: 6px;
-  }
+  
 
-  .pick-screen .pf-model::before {
-    content: none;
-  }
+  
 
-  .pick-screen .pf-stats {
-    gap: 2px 8px;
-  }
+  
 
-  .pick-screen .pf-k {
-    font-size: 6px;
-  }
+  
 
-  .pick-screen .pf-bar i {
-    width: 6px;
-    height: 5px;
-  }
+  
 
-  .pick-screen .pf-cmd {
-    font-size: 6px;
-    padding: 1px 4px;
-  }
+  
 
-  .pick-screen .sel-assist {
-    margin-top: 5px;
-    gap: 6px;
-  }
+  
 
-  .pick-screen .sel-assist .aph {
-    width: 24px;
-    height: 30px;
-    font-size: 13px;
-  }
+  
 
-  .pick-screen .sel-assist b {
-    font-size: 10px;
-  }
+  
 
-  .pick-screen .sel-assist small,
-  .pick-screen .sel-assist .ak {
-    font-size: 6px;
-  }
+  
 
-  .pick-screen .arena {
-    grid-column: 1 / -1;
-    grid-row: 3;
-  }
+  
 
-  .pick-screen .bottom {
-    grid-column: 2;
-    grid-row: 2 / span 2;
-    align-self: end;
-    gap: 5px;
-  }
+  
 
-  .pick-screen .grid {
-    grid-template-columns: repeat(var(--cols, 6), 46px);
-    gap: 4px;
-    padding: 5px;
-    max-height: 62vh;
-    overflow-y: auto;
-    touch-action: pan-y;
-  }
+  
 
-  .pick-screen .cell {
-    width: 46px;
-    height: 58px;
-  }
+  
 
-  .pick-screen .cell .nm {
-    font-size: 6px;
-  }
+  
 
-  .pick-screen .cell .tag {
-    top: -8px;
-    font-size: 7px;
-    padding: 1px 3px;
-  }
+  
 
-  .pick-screen .cell.special {
-    font-size: 22px;
-  }
+  
 
-  .pick-screen .sel-hint {
-    font-size: 7px;
-    line-height: 1.5;
-  }
+  
 
-  .btn.sel-ok {
-    min-width: 0;
-    width: 100%;
-    min-height: 38px;
-    padding: 8px 12px;
-    font-size: 10px;
-  }
+  
 
   /* --- stage select: one row of cards --- */
-  .stage-screen {
-    gap: 6px;
-  }
+  
 
-  .stage-card {
-    width: min(220px, 21vw);
-  }
+  
 
-  .stage-card .lbl {
-    padding: 5px 6px;
-    font-size: 9px;
-  }
+  
 
-  .stage-card .lbl small {
-    font-size: 7px;
-    margin-top: 3px;
-  }
+  
 
-  .stage-go {
-    min-height: 38px;
-    padding: 8px 12px;
-  }
+  
 
   /* --- options: the settings in two columns, the controls side by side below --- */
   .options-screen .h1 {
@@ -745,22 +447,11 @@ html.touch-ui .btn:hover {
     padding: 10px 14px;
   }
 
-  .options-keys-wrap {
-    width: min(820px, 100%);
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 10px;
-    align-items: start;
-  }
+  
 
-  .options-keys-wrap .options {
-    width: auto;
-    padding: 10px 12px;
-  }
+  
 
-  .controls-table {
-    font-size: 8px;
-  }
+  
 
   /* --- lab: form on the left, 3D preview on the right --- */
   .lab {
@@ -784,9 +475,7 @@ html.touch-ui .btn:hover {
   }
 
   /* --- online --- */
-  .online-screen .status {
-    max-width: min(640px, 100%);
-  }
+  
 }
 
 /* lab header: ◀ RETOUR + LABO (every size) */
@@ -816,15 +505,6 @@ html.touch-ui .btn:hover {
 }
 
 /* options on touch screens: the touch controls help (src/screens/help.ts) */
-.options-screen .help-h {
-  font-size: 9px;
-  color: var(--muted);
-  margin: 2px 0 6px;
-}
-
-.options-screen .help-h + table {
-  margin-bottom: 10px;
-}
 
 /* --- character catalogues (◀ ▶ around the grid): slimmer arrows on phones --- */
 @media (max-width: 600px), (max-height: 500px) {

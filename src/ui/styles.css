@@ -121,19 +121,9 @@ button {
   }
 }
 
-.title-press {
-  font-size: 14px;
-  margin-top: 20px;
-  text-shadow: 2px 2px 0 #000, 0 0 6px #000;
-}
-
 /* the attract mode behind can be bright: keep the small print readable */
 .title-foot {
   text-shadow: 1px 1px 0 #000, 0 0 4px #000;
-}
-
-.blink {
-  animation: blink 1s steps(2) infinite;
 }
 
 @keyframes blink {
@@ -196,13 +186,6 @@ button {
 .btn:disabled {
   opacity: 0.4;
   pointer-events: none;
-}
-
-.title-hint {
-  font-size: clamp(10px, 1.4vw, 13px);
-  color: var(--muted);
-  text-align: center;
-  line-height: 1.8;
 }
 
 .panel {
@@ -340,32 +323,6 @@ button {
   pointer-events: none;
 }
 
-.pname {
-  font-family: var(--arcade);
-  font-style: italic;
-  font-size: clamp(22px, 4.5vw, 56px);
-  text-shadow: 4px 4px 0 #000;
-  line-height: 1;
-}
-
-.pname .ttl {
-  display: block;
-  font-family: var(--pixel);
-  font-style: normal;
-  font-size: clamp(8px, 1.1vw, 11px);
-  color: var(--muted);
-  margin-top: 8px;
-}
-
-.pname.p1 {
-  color: #7cc4ff;
-}
-
-.pname.p2 {
-  color: #ff6a6a;
-  text-align: right;
-}
-
 .lock {
   font-size: 10px;
   color: var(--orange2);
@@ -376,15 +333,6 @@ button {
 .cell.a1 {
   outline: 3px dashed #3aa0ff;
   outline-offset: -5px;
-}
-
-.cell.a2 {
-  outline: 3px dashed var(--red);
-  outline-offset: -5px;
-}
-
-.cell.a1.a2 {
-  outline-color: #c040ff;
 }
 
 .cell .tag.ta {
@@ -410,10 +358,6 @@ button {
   font-size: 28px;
   text-shadow: 2px 2px 0 #000;
   pointer-events: none;
-}
-
-.cell.nope {
-  animation: nope 0.35s;
 }
 
 @keyframes nope {
@@ -578,215 +522,13 @@ button {
   text-shadow: 2px 2px 0 #000;
 }
 
-.pname.p2 .profile {
-  align-items: flex-end;
-}
-
-.pf-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  max-width: 100%;
-}
-
-.pname.p2 .pf-head {
-  flex-direction: row-reverse;
-}
-
-.pf-badge {
-  flex: none;
-  display: inline-block;
-  padding: 2px 8px;
-  font-family: var(--arcade);
-  font-style: italic;
-  font-size: 12px;
-  line-height: 1.2;
-  color: #12060a;
-  text-shadow: none;
-  background: var(--pc, #7ee07a);
-  border: 2px solid #000;
-  box-shadow: 2px 2px 0 #000;
-  transform: skewX(-8deg);
-}
-
-.pf-line {
-  min-width: 0;
-  font-size: 9px;
-  line-height: 1.5;
-  color: #fff;
-}
-
-.pf-line small {
-  font-size: 8px;
-  color: var(--muted);
-}
-
-.pf-model::before {
-  content: ' · ';
-}
-
-.pf-stats {
-  display: grid;
-  grid-template-columns: repeat(2, auto);
-  gap: 4px 14px;
-}
-
-.pf-stat {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.pf-k {
-  min-width: 9ch;
-  font-size: 7px;
-  color: var(--muted);
-}
-
-.pf-bar {
-  display: flex;
-  gap: 2px;
-}
-
-.pf-bar i {
-  width: 10px;
-  height: 7px;
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid #000;
-  transform: skewX(-12deg);
-}
-
-.pf-bar i.on {
-  background: var(--pc, #7ee07a);
-}
-
-.pf-cmd {
-  padding: 2px 6px;
-  font-size: 7px;
-  line-height: 1.4;
-  color: var(--pc, #fff);
-  border: 1px solid var(--pc, #fff);
-  background: rgba(0, 0, 0, 0.55);
-}
-
 /* small badge in lists (online tournament lobby) */
-.pf-badge.mini {
-  margin: 0 5px;
-  padding: 1px 4px;
-  font-size: 7px;
-  border-width: 1px;
-  box-shadow: 1px 1px 0 #000;
-  vertical-align: middle;
-}
 
 /* « ASSIST : ISIS » + move name under a player's name */
-.sel-assist {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-  font-family: var(--pixel);
-  font-style: normal;
-  text-shadow: 2px 2px 0 #000;
-}
-
-.pname.p2 .sel-assist {
-  flex-direction: row-reverse;
-}
-
-.sel-assist .aph {
-  flex: none;
-  width: 34px;
-  height: 42px;
-  border: 2px solid var(--orange2);
-  background: #111 center / cover no-repeat;
-  image-rendering: pixelated;
-  box-shadow: 3px 3px 0 #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--arcade);
-  font-style: normal;
-  font-size: 18px;
-  color: var(--orange);
-}
-
-.sel-assist .atx {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.sel-assist .ak {
-  font-size: 7px;
-  color: var(--orange2);
-  letter-spacing: 1px;
-}
-
-.sel-assist.picking .ak {
-  animation: blink 0.8s steps(2) infinite;
-}
-
-.sel-assist b {
-  font-size: clamp(11px, 1.6vw, 16px);
-  font-weight: normal;
-  color: #fff;
-}
-
-.sel-assist small {
-  font-size: 8px;
-  color: var(--muted);
-  line-height: 1.4;
-}
-
-.btn.sel-ok.as {
-  box-shadow: 0 0 0 3px var(--orange2);
-}
 
 /* ------------------------------------------------------------------ */
 /* stage select                                                        */
 /* ------------------------------------------------------------------ */
-.stages {
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.stage-card {
-  width: min(280px, 22vw);
-  border: 3px solid #333;
-  background: #000;
-  cursor: pointer;
-  position: relative;
-}
-
-.stage-card img {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  image-rendering: pixelated;
-  object-fit: cover;
-  background: #111;
-}
-
-.stage-card .lbl {
-  padding: 8px;
-  font-size: 11px;
-}
-
-.stage-card .lbl small {
-  display: block;
-  color: var(--muted);
-  font-size: 8px;
-  margin-top: 6px;
-}
-
-.stage-card.sel {
-  border-color: var(--orange);
-  box-shadow: 0 0 24px rgba(255, 138, 28, 0.5);
-}
 
 /* ------------------------------------------------------------------ */
 /* VS screen                                                           */
@@ -824,64 +566,6 @@ button {
 }
 
 /* the friend on call, under the fighter's name */
-.vs .vs-assist {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  margin-top: 14px;
-  font-family: var(--pixel);
-  font-style: normal;
-  text-shadow: 2px 2px 0 #000;
-  animation: pop 0.4s 0.5s cubic-bezier(0.2, 1.6, 0.4, 1) both;
-}
-
-.vs .vs-assist .aph {
-  flex: none;
-  width: 48px;
-  height: 60px;
-  border: 3px solid var(--teal);
-  background: #000 center / cover no-repeat;
-  image-rendering: pixelated;
-  box-shadow: 4px 4px 0 #000;
-}
-
-.vs .vs-assist .atx {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  text-align: left;
-  min-width: 0;
-}
-
-.vs .vs-assist .ak {
-  font-size: 8px;
-  color: var(--teal);
-  letter-spacing: 1px;
-}
-
-.vs .vs-assist b {
-  font-family: var(--arcade);
-  font-style: italic;
-  font-weight: normal;
-  font-size: clamp(14px, 2vw, 24px);
-  color: #fff;
-}
-
-.vs .vs-assist small {
-  font-size: 8px;
-  color: #d8d2e8;
-  line-height: 1.4;
-}
-
-.vs .vsword {
-  font-family: var(--arcade);
-  font-size: clamp(60px, 12vw, 160px);
-  font-style: italic;
-  color: var(--orange2);
-  text-shadow: 6px 6px 0 #000;
-  animation: pop 0.5s 0.35s cubic-bezier(0.2, 1.6, 0.4, 1) both;
-}
 
 @keyframes slideL {
   from {
@@ -971,25 +655,7 @@ button {
   flex-direction: row-reverse;
 }
 
-.hud .nameplate {
-  background: linear-gradient(180deg, #ff4a4a, #9a0a12);
-  border: 2px solid #000;
-  padding: 3px 8px;
-  font-family: var(--arcade);
-  font-style: italic;
-  font-size: clamp(10px, 1.6vw, 16px);
-  text-shadow: 2px 2px 0 #000;
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
 /* fighter played by a tournament participant: "NAME (FIGHTER)" */
-.hud .nameplate small {
-  font-size: 0.75em;
-}
 
 .hud .wins {
   display: flex;
@@ -1011,87 +677,10 @@ button {
 }
 
 /* guard gauge: inner side of the nameplate row, right under the health bar */
-.hud .gg {
-  flex: 0 1 46%;
-  min-width: 0;
-  margin-left: auto;
-  align-self: flex-start;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.hud .gg.right {
-  margin-left: 0;
-  margin-right: auto;
-  flex-direction: row-reverse;
-}
-
-.hud .glbl {
-  flex: none;
-  font-size: 7px;
-  color: #a8ccff;
-  text-shadow: 1px 1px 0 #000;
-}
-
-.hud .gbar {
-  position: relative;
-  flex: 1;
-  min-width: 0;
-  height: 8px;
-  background: #0b1424;
-  border: 2px solid #000;
-  box-shadow: 0 0 0 1px #6a8ab8;
-  overflow: hidden;
-}
-
-.hud .gfill {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 100%;
-  background: linear-gradient(180deg, #eef8ff 0%, #8ccaff 45%, #3a7fe0 100%);
-}
-
-.hud .gg.right .gfill {
-  right: auto;
-  left: 0;
-}
 
 /* worn: yellow · under 30 %: red and blinking · broken: empty, flashing red frame */
-.hud .gg.worn .gfill {
-  background: linear-gradient(180deg, #fff6cc 0%, #ffd24a 45%, #d8901a 100%);
-}
-
-.hud .gg.low .gfill {
-  background: linear-gradient(180deg, #ffd8c0 0%, #ff6a2a 45%, #b81c0a 100%);
-  animation: blink 0.36s steps(2) infinite;
-}
-
-.hud .gg.low .gbar {
-  box-shadow: 0 0 0 1px #ff6a2a, 0 0 8px rgba(255, 80, 30, 0.8);
-}
-
-.hud .gg.low .glbl {
-  color: #ff9a6a;
-}
-
-.hud .gg.broken .gbar {
-  background: #4a0608;
-  box-shadow: 0 0 0 1px #ff3a3a, 0 0 10px rgba(255, 30, 30, 0.9);
-  animation: blink 0.2s steps(2) infinite;
-}
-
-.hud .gg.broken .glbl {
-  color: #ff5050;
-}
 
 /* training: endless clock, no round markers, no combo pop-ups (the training panel has them) */
-.hud.training .wins,
-.hud.training .combo {
-  display: none;
-}
 
 .hud .timer {
   font-family: var(--arcade);
@@ -1107,143 +696,7 @@ button {
   color: #ff5050;
 }
 
-.hud .meters {
-  position: absolute;
-  bottom: max(14px, env(safe-area-inset-bottom));
-  left: max(2%, env(safe-area-inset-left));
-  right: max(2%, env(safe-area-inset-right));
-  display: flex;
-  justify-content: space-between;
-}
-
-.meter {
-  width: 32%;
-}
-
-.meter .mbar {
-  height: 10px;
-  background: #160d22;
-  border: 2px solid #000;
-  box-shadow: 0 0 0 1px #6a5a8a;
-  position: relative;
-  overflow: hidden;
-}
-
-.meter .mfill {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  background: linear-gradient(90deg, #6a2cff, #ff4adf);
-}
-
-.meter.full .mfill {
-  background: linear-gradient(90deg, #ff8a1c, #ffe34a, #ff8a1c);
-  background-size: 200% 100%;
-  animation: shimmer 0.8s linear infinite;
-}
-
-.meter.right .mfill {
-  left: auto;
-  right: 0;
-}
-
-.meter .mlbl {
-  font-size: 8px;
-  margin-bottom: 4px;
-  color: #d6c8ff;
-}
-
-.meter.right .mlbl {
-  text-align: right;
-}
-
-.meter.full .mlbl {
-  color: var(--orange2);
-}
-
 /* assist: friend's face + recharge gauge, beside the BBL gauge (inner side) */
-.meter {
-  position: relative;
-}
-
-.assistw {
-  position: absolute;
-  bottom: -2px;
-  left: calc(100% + 12px);
-  display: flex;
-  align-items: flex-end;
-  gap: 6px;
-  width: 128px;
-}
-
-.assistw.right {
-  left: auto;
-  right: calc(100% + 12px);
-  flex-direction: row-reverse;
-}
-
-.assistw .aface {
-  flex: none;
-  width: 34px;
-  height: 34px;
-  border: 2px solid #000;
-  box-shadow: 0 0 0 2px #2a8f86;
-  background: #111 center 20% / cover no-repeat;
-  image-rendering: pixelated;
-  filter: grayscale(1) brightness(0.6);
-  transition: filter 0.2s;
-}
-
-.assistw .acol {
-  flex: 1;
-  min-width: 0;
-}
-
-.assistw .albl {
-  font-size: 8px;
-  margin-bottom: 4px;
-  color: #8fd8cf;
-  white-space: nowrap;
-}
-
-.assistw.right .albl {
-  text-align: right;
-}
-
-.assistw .abar {
-  height: 6px;
-  background: #0d1a1c;
-  border: 2px solid #000;
-  box-shadow: 0 0 0 1px #3a6a66;
-  position: relative;
-  overflow: hidden;
-}
-
-.assistw .afill {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  background: linear-gradient(90deg, #1a8f9a, #29d7c4);
-}
-
-.assistw.right .afill {
-  left: auto;
-  right: 0;
-}
-
-.assistw.ready .aface {
-  filter: none;
-  box-shadow: 0 0 0 2px var(--teal), 0 0 12px var(--teal);
-}
-
-.assistw.ready .albl {
-  color: #b8fff6;
-  text-shadow: 0 0 6px var(--teal), 1px 1px 0 #000;
-  animation: assistPulse 0.9s ease-in-out infinite alternate;
-}
 
 @keyframes assistPulse {
   from {
@@ -1251,91 +704,7 @@ button {
   }
 }
 
-.assistw.ready .afill {
-  background: linear-gradient(90deg, #29d7c4, #d8fffa, #29d7c4);
-  background-size: 200% 100%;
-  animation: shimmer 0.9s linear infinite;
-}
-
-.assistw.busy .aface {
-  filter: none;
-  box-shadow: 0 0 0 2px var(--orange2);
-}
-
-.assistw.busy .albl {
-  color: var(--orange2);
-}
-
 /* « ISIS : UPPERCUT MUSCLÉ ! » when an assist is called */
-.assist-call {
-  position: absolute;
-  top: calc(max(10px, env(safe-area-inset-top)) + clamp(14px, 2.6vh, 24px) + 46px);
-  max-width: min(62%, 520px);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 14px 6px 6px;
-  background: linear-gradient(90deg, rgba(10, 60, 70, 0.92), rgba(10, 60, 70, 0.55));
-  border: 2px solid var(--teal);
-  box-shadow: 4px 4px 0 rgba(0, 0, 0, 0.6);
-  transform: skewX(-8deg);
-  animation: callInL 0.25s cubic-bezier(0.2, 1.4, 0.4, 1) both;
-}
-
-.assist-call.left {
-  left: max(2%, env(safe-area-inset-left));
-}
-
-.assist-call.right {
-  right: max(2%, env(safe-area-inset-right));
-  flex-direction: row-reverse;
-  padding: 6px 6px 6px 14px;
-  text-align: right;
-  background: linear-gradient(270deg, rgba(10, 60, 70, 0.92), rgba(10, 60, 70, 0.55));
-  animation-name: callInR;
-}
-
-.assist-call.out {
-  opacity: 0;
-  transition: opacity 0.22s;
-}
-
-.assist-call .ph {
-  flex: none;
-  width: 40px;
-  height: 48px;
-  border: 2px solid #fff;
-  background: #000 center / cover no-repeat;
-  image-rendering: pixelated;
-  transform: skewX(8deg);
-}
-
-.assist-call .txt {
-  min-width: 0;
-  transform: skewX(8deg);
-}
-
-.assist-call .mv {
-  font-family: var(--arcade);
-  font-style: italic;
-  font-size: clamp(13px, 2vw, 22px);
-  line-height: 1.1;
-  color: #fff;
-  text-shadow: 2px 2px 0 #000;
-}
-
-.assist-call .mv b {
-  font-weight: normal;
-  color: var(--orange2);
-}
-
-.assist-call .shout {
-  margin-top: 4px;
-  font-size: clamp(8px, 1.1vw, 11px);
-  line-height: 1.4;
-  color: #c8fff8;
-  text-shadow: 1px 1px 0 #000;
-}
 
 @keyframes callInL {
   from {
@@ -1352,14 +721,6 @@ button {
 }
 
 /* destruction finish: the K.O.'d fighter went through the scenery */
-.announce.destroy {
-  font-size: clamp(44px, 10vw, 140px);
-  background: linear-gradient(180deg, #fff 0%, #ffe34a 30%, #ff5a1c 62%, #7a0a00 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  letter-spacing: 0.02em;
-  animation: announceIn 0.35s cubic-bezier(0.2, 1.5, 0.4, 1) both, destroyShake 0.5s 0.35s steps(6) 1;
-}
 
 @keyframes destroyShake {
   20% {
@@ -1377,36 +738,6 @@ button {
   to {
     background-position: -200% 0;
   }
-}
-
-.announce {
-  position: absolute;
-  left: 3%;
-  right: 3%;
-  top: 38%;
-  text-align: center;
-  font-family: var(--arcade);
-  font-style: italic;
-  font-size: clamp(48px, 11vw, 150px);
-  line-height: 1;
-  background: linear-gradient(180deg, #fffbe0 0%, var(--orange2) 40%, var(--orange) 65%, #b8280c 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(5px 5px 0 #000);
-  transform: translateY(-50%);
-  animation: announceIn 0.35s cubic-bezier(0.2, 1.5, 0.4, 1) both;
-}
-
-.announce.small {
-  font-size: clamp(30px, 6vw, 80px);
-}
-
-.announce.ko {
-  background: linear-gradient(180deg, #fff 0%, #ff8080 40%, #d8202a 70%, #600 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  font-size: clamp(80px, 18vw, 240px);
 }
 
 @keyframes announceIn {
@@ -1503,15 +834,6 @@ button {
 .subtitle .line {
   font-size: clamp(11px, 1.6vw, 16px);
   line-height: 1.5;
-}
-
-.netinfo {
-  position: absolute;
-  top: calc(max(10px, env(safe-area-inset-top)) + 60px);
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 8px;
-  color: var(--muted);
 }
 
 /* ------------------------------------------------------------------ */
@@ -1692,23 +1014,6 @@ button {
   gap: 14px;
 }
 
-.controls-table {
-  font-size: 9px;
-  line-height: 2;
-  color: var(--muted);
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.controls-table td {
-  padding: 2px 6px;
-  border-bottom: 1px solid var(--line);
-}
-
-.controls-table td:first-child {
-  color: var(--text);
-}
-
 kbd {
   font-family: var(--pixel);
   font-size: 9px;
@@ -1720,12 +1025,6 @@ kbd {
 }
 
 /* touch controls: see mobile-game.css */
-
-@media (max-aspect-ratio: 1/1) {
-  .stage-card {
-    width: 42vw;
-  }
-}
 
 @media (max-height: 480px) {
   .screen {
@@ -1771,61 +1070,7 @@ kbd {
   z-index: 5;
 }
 
-.announce.super {
-  top: 16%;
-  font-size: clamp(36px, 7vw, 96px);
-  background: linear-gradient(180deg, #fff 0%, #ffe34a 35%, #ff8a1c 65%, #c01a0a 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  letter-spacing: 4px;
-}
-
 /* BBL MAX cinematics: comic-book text */
-.comic {
-  position: absolute;
-  z-index: 4;
-  pointer-events: none;
-  font-family: var(--arcade);
-  font-style: italic;
-  line-height: 1;
-  color: var(--comic, #ffe23a);
-  -webkit-text-stroke: 3px #000;
-  paint-order: stroke fill;
-  text-shadow: 5px 5px 0 #000;
-  white-space: nowrap;
-}
-
-.comic.boom {
-  font-size: clamp(40px, 9vw, 120px);
-  transform: translate(-50%, -50%) rotate(var(--rot, 0deg));
-  animation: comicPop 0.22s cubic-bezier(0.2, 1.8, 0.4, 1) both;
-}
-
-.comic.punch {
-  left: 4%;
-  right: 4%;
-  top: 30%;
-  text-align: center;
-  white-space: normal;
-  font-size: clamp(22px, 4.6vw, 60px);
-  color: var(--comic, #fff);
-  transform: rotate(-3deg);
-  animation: comicSlam 0.3s cubic-bezier(0.2, 1.6, 0.4, 1) both;
-}
-
-.comic.caption {
-  left: 5%;
-  right: 5%;
-  top: 14%;
-  text-align: center;
-  white-space: normal;
-  font-size: clamp(16px, 2.6vw, 30px);
-  font-style: normal;
-  color: var(--comic, #fff);
-  -webkit-text-stroke: 2px #000;
-  text-shadow: 3px 3px 0 #000;
-  animation: captionIn 0.25s both;
-}
 
 @keyframes captionIn {
   from {
@@ -1849,10 +1094,6 @@ kbd {
 }
 
 /* BBL MAX gag: the nameplate suddenly shows another name */
-.nameplate.renamed {
-  color: #ff5a5a;
-  animation: announceIn 0.3s both;
-}
 
 /* ------------------------------------------------------------------ */
 /* HUD: game mode label under the clock (« SURVIE 4/14 »)               */
@@ -1863,22 +1104,3 @@ kbd {
   justify-content: center;
 }
 
-.hud .modetag {
-  display: none;
-  position: absolute;
-  top: calc(100% + 2px);
-  left: 50%;
-  transform: translateX(-50%);
-  white-space: nowrap;
-  font-size: clamp(7px, 0.9vw, 10px);
-  letter-spacing: 1px;
-  padding: 3px 6px 2px;
-  color: var(--orange2);
-  background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 210, 58, 0.45);
-  text-shadow: 1px 1px 0 #000;
-}
-
-.hud .modetag.on {
-  display: block;
-}

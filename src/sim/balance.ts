@@ -116,6 +116,22 @@ export function duel(a: DuelUnit, b: DuelUnit, aFirst: boolean, rng: { rng: numb
   return 0.5;
 }
 
+/** win rate of `a` against `b` over n duels (each side starts half of them), its own random numbers */
+export function pairRate(format: Format, a: string, b: string, n: number, seed: number, noTriangle = true): number {
+  const ua = format.promoted ? [duelUnit(a, format, 0), duelUnit(a, format, 1)] : [duelUnit(a, format)];
+  const ub = format.promoted ? [duelUnit(b, format, 0), duelUnit(b, format, 1)] : [duelUnit(b, format)];
+  const rng = { rng: seed >>> 0 || 1 };
+  let w = 0;
+  let g = 0;
+  for (const x of ua)
+    for (const y of ub)
+      for (let i = 0; i < n; i++) {
+        w += duel(x, y, i % 2 === 0, rng, noTriangle);
+        g++;
+      }
+  return w / g;
+}
+
 export interface DuelTable {
   ids: string[];
   /** win rate of each friend over all its duels */
