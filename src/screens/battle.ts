@@ -1755,6 +1755,8 @@ export class BattleScreen implements Screen {
         h('div', { class: 'sh-items' }, ...u.items.map((sl, i) => h('div', { class: i === equippedIndex(u) ? 'eq' : '' }, `${item(sl.id).type ? WEAPON_ICONS[item(sl.id).type!] + ' ' : ''}${item(sl.id).name}`, h('small', null, ` ${sl.uses}/${item(sl.id).uses}`)))),
         supports.length ? h('div', { class: 'sh-sup' }, h('small', null, 'SOUTIENS'), ...supports) : null,
         h('div', { class: 'sh-w' }, `Armes : ${c.weapons.map((w) => WEAPON_ICONS[w] + ' ' + WEAPON_NAMES[w]).join(', ')}`),
+        h('div', { class: 'sh-w' }, `Croissances : ${(['hp', 'pow', 'skl', 'spd', 'lck', 'def', 'res'] as const).map((k) => `${k === 'pow' ? powName(c) : GROW_NAMES[k]} ${u.growth[k]}%`).join(' · ')}`),
+        c.promotesTo ? h('div', { class: 'sh-w' }, `Promotion (niv. 10 + Diplôme BBL) : ${c.promotesTo.map((x) => CLASSES[x].name).join(' ou ')}`) : null,
         h('button', { class: 'btn', onclick: close }, 'FERMER'),
       ),
     );
