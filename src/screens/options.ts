@@ -1,0 +1,181 @@
+import { audio } from '../audio/audio';
+import type { App, Screen } from '../app';
+import { saveSettings, settings } from '../game/settings';
+import { input } from '../input/input';
+import { Showroom } from '../render/showroom';
+import { backButton, h, syncTouchUi, uiRoot } from '../ui/dom';
+import { resetSupports } from '../game/profileStore';
+import { ControllersScreen } from './controllers';
+import { goMenu } from './flow';
+
+function chips<T extends string | number>(options: [T, string][], get: () => T, set: (v: T) => void) {
+  const wrap = h('div', { class: 'chips' });
+  const render = () => {
+    wrap.replaceChildren(
+      ...options.map(([v, label]) => {
+        const b = h('button', { class: get() === v ? 'on' : '' }, label);
+        b.addEventListener('click', () => {
+          set(v);
+          audio.sfx('cursor');
+          render();
+        });
+        return b;
+      }),
+    );
+  };
+  render();
+  return wrap;
+}
+
+/** A row of the options moved through with the keyboard / a controller (↑ ↓), changed with ← → or confirm. */
+interface NavItem {
+  el: HTMLElement;
+  /** ← / → (-1 / 1) */
+  step?: (d: number) => void;
+  press?: () => void;
+}
+
+/** chips field: ← → pick the neighbour, confirm the next one (wrapping) */
+function chipsItem(field: HTMLElement): NavItem {
+  const pick = (d: number, wrap: boolean) => {
+    const bs = Array.from(field.querySelectorAll<HTMLButtonElement>('.chips button'));
+    const i = bs.findIndex((b) => b.classList.contains('on'));
+    let j = i + d;
+    if (wrap) j = (j + bs.length) % bs.length;
+    bs[j]?.click();
+  };
+  return { el: field, step: (d) => pick(d, false), press: () => pick(1, true) };
+}
+
+function sliderItem(field: HTMLElement): NavItem {
+  const inp = field.querySelector('input')!;
+  return {
+    el: field,
+    step: (d) => {
+      const v = Math.max(0, Math.min(1, Math.round((Number(inp.value) + d * 0.05) * 20) / 20));
+      if (String(v) === inp.value) return;
+      inp.value = String(v);
+      inp.dispatchEvent(new Event('input'));
+    },
+  };
+}
+
+export class OptionsScreen implements Screen {
+  private showroom = new Showroom();
+  private nav: NavItem[] = [];
+  private at = 0;
+  private padsSub: HTMLElement | null = null;
+  private padsCount = -1;
+
+  constructor(private app: App) {}
+
+  enter() {
+    const vol = audio.getVolumes();
+    const slider = (label: string, key: keyof typeof vol) => {
+      const inp = h('input', { type: 'range', min: '0', max: '1', step: '0.05', value: String(vol[key]) });
+      inp.addEventListener('input', () => {
+        audio.setVolumes({ [key]: Number(inp.value) });
+        if (key === 'sfx') audio.sfx('hitLight');
+      });
+      return h('label', { class: 'field' }, label, inp);
+    };
+    const apply = () => {
+      saveSettings();
+      this.app.applySettings();
+      syncTouchUi();
+    };
+    const back = h('button', { class: 'btn primary' }, 'RETOUR');
+    back.addEventListener('click', () => goMenu());
+    // gamepads & arcade sticks: their own screen (src/screens/controllers.ts)
+    this.padsSub = h('span', { class: 'sub' });
+    const pads = h('button', { class: 'btn pads-open' }, 'MANETTES & STICKS', this.padsSub);
+    pads.addEventListener('click', () => {
+      audio.sfx('confirm');
+      this.app.go(new ControllersScreen(this.app));
+    });
+    const fields = [
+      h('div', { class: 'field' }, 'NIVEAU DE L’ORDINATEUR', chips([['easy', 'FACILE'], ['normal', 'NORMAL'], ['hard', 'DIFFICILE']], () => settings.ai, (v) => ((settings.ai = v), apply()))),
+      h('div', { class: 'field' }, 'SCÈNES DE COMBAT', chips([['full', 'COMPLÈTES'], ['fast', 'RAPIDES'], ['off', 'COUPÉES']], () => settings.scenes, (v) => ((settings.scenes = v), apply()))),
+      h('div', { class: 'field' }, 'ANIMATION DES COUPS CRITIQUES', chips([[1, 'OUI'], [0, 'NON']], () => (settings.critFx ? 1 : 0), (v) => ((settings.critFx = v === 1), apply()))),
+      h('div', { class: 'field' }, 'DÉPLACEMENTS SUR LA CARTE', chips([[1, 'NORMAUX'], [2, 'RAPIDES']], () => settings.walk, (v) => ((settings.walk = v as 1 | 2), apply()))),
+      h(
+        'div',
+        { class: 'field' },
+        'RÉSOLUTION (PLUS BAS = PLUS RÉTRO)',
+        chips([[240, '240p PS1'], [270, '270p'], [360, '360p'], [480, '480p'], [720, '720p']], () => settings.lines, (v) => ((settings.lines = v), apply())),
+      ),
+      h(
+        'div',
+        { class: 'field' },
+        'QUALITÉ AUTO (BAISSE LA RÉSOLUTION SI ÇA RAME)',
+        chips([[1, 'OUI'], [0, 'NON']], () => (settings.autoQuality === false ? 0 : 1), (v) => ((settings.autoQuality = v === 1), apply())),
+      ),
+      h('div', { class: 'field' }, 'AFFICHER LES IMAGES / SECONDE', chips([[1, 'OUI'], [0, 'NON']], () => (settings.showFps ? 1 : 0), (v) => ((settings.showFps = v === 1), apply()))),
+      h('div', { class: 'field' }, 'TRAMAGE 15 BITS', chips([[1, 'OUI'], [0, 'NON']], () => (settings.dither ? 1 : 0), (v) => ((settings.dither = v === 1), apply()))),
+      h('div', { class: 'field' }, 'INTERFACE', chips([['auto', 'AUTO'], ['on', 'TACTILE'], ['off', 'SOURIS / CLAVIER']], () => settings.touch, (v) => ((settings.touch = v), apply()))),
+    ];
+    const resetBtn = h('button', { class: 'btn small' }, 'REMETTRE À ZÉRO');
+    resetBtn.addEventListener('click', () => {
+      resetSupports();
+      resetBtn.textContent = 'FAIT !';
+    });
+    const sliders = [slider('VOLUME GÉNÉRAL', 'master'), slider('MUSIQUE', 'music'), slider('BRUITAGES', 'sfx'), slider('VOIX', 'voice')];
+    uiRoot().append(
+      h(
+        'div',
+        { class: 'screen dim options-screen', style: 'overflow-y:auto;justify-content:flex-start;touch-action:pan-y' },
+        h('div', { class: 'h1' }, 'OPTIONS'),
+        h('div', { class: 'panel options options-main' }, h('div', { class: 'field pads-field' }, pads), ...fields, ...sliders),
+        h('div', { class: 'panel options' }, h('div', { class: 'field' }, 'SOUTIENS ENREGISTRÉS', resetBtn)),
+        back,
+        // scrolls away with the page (RETOUR again at the bottom)
+        backButton(() => goMenu()),
+      ),
+    );
+    this.nav = [{ el: pads, press: () => pads.click() }, ...fields.map(chipsItem), ...sliders.map(sliderItem), { el: back, press: () => back.click() }];
+    this.at = 0;
+    this.focus(false);
+    this.updatePads();
+  }
+
+  exit() {
+    this.showroom.dispose();
+  }
+
+  private focus(scroll: boolean) {
+    this.nav.forEach((it, i) => it.el.classList.toggle('kfocus', i === this.at));
+    if (scroll) this.nav[this.at]?.el.scrollIntoView?.({ block: 'nearest' });
+  }
+
+  /** "2 connectées · configurer, tester" under MANETTES & STICKS */
+  private updatePads() {
+    const n = input.padList().length;
+    if (n === this.padsCount || !this.padsSub) return;
+    this.padsCount = n;
+    this.padsSub.textContent = n === 0 ? 'Aucune branchée · sticks arcade, manettes' : `${n} branchée${n > 1 ? 's' : ''} · configurer, tester`;
+  }
+
+  frame(dt: number) {
+    for (const e of input.menuEvents()) {
+      if (e.action === 'back') {
+        audio.sfx('cancel');
+        goMenu();
+        return;
+      }
+      const it = this.nav[this.at];
+      if (e.action === 'up' || e.action === 'down') {
+        const j = Math.max(0, Math.min(this.nav.length - 1, this.at + (e.action === 'up' ? -1 : 1)));
+        if (j !== this.at) audio.sfx('cursor');
+        this.at = j;
+        this.focus(true);
+      } else if (e.action === 'left' || e.action === 'right') it?.step?.(e.action === 'left' ? -1 : 1);
+      else if (e.action === 'confirm' || e.action === 'start') {
+        it?.press?.();
+        // the screen may have changed (MANETTES & STICKS, RETOUR)
+        if (it === this.nav[0] || it === this.nav[this.nav.length - 1]) return;
+      }
+    }
+    this.updatePads();
+    this.showroom.render(this.app.pipeline, dt, this.app.aspect);
+  }
+}
