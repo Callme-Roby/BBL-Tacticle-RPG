@@ -264,6 +264,10 @@ function bestPlanFor(s: BattleState, ctx: Context, u: Unit): Plan | null {
   }
   const c = classOf(u);
   const riskW = ctx.level === 'easy' ? 0 : ctx.level === 'normal' ? 0.45 : 0.85;
+  // waiting out of reach is wise at first, then the AI has to engage (no endless standoffs)
+  const defending = (s.objective.kind === 'defend' || s.objective.kind === 'escape') && s.objective.attacker !== u.team;
+  const patience = defending ? 1 : Math.max(0.2, 1 - (s.turn - 1) * 0.15);
+  const waitRisk = riskW * patience;
   const careful = u.leader && s.objective.kind !== 'rout' ? 2 : 1;
   const healerOnly = usableStaves(u).length > 0 && usableWeapons(u).length === 0;
   const plans: Plan[] = [];
@@ -289,7 +293,7 @@ function bestPlanFor(s: BattleState, ctx: Context, u: Unit): Plan | null {
       const aHealer = usableStaves(a).length > 0 && usableWeapons(a).length === 0;
       if (aHealer && !healerOnly && dd <= 2) group += ctx.level === 'easy' ? 0 : 2.5;
     }
-    const posBase = terrain + heal + group - dg * riskW * careful + noise();
+    const posBase = terrain + heal + group - dg * waitRisk * careful + noise();
 
     // ---- attacks
     if (!healerOnly) {

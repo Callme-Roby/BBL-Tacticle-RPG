@@ -107,6 +107,8 @@ export class BattleScreen implements Screen {
   private lastPhaseShown = -1;
   private disposed = false;
   private focusIdx = 0;
+  /** fast-forward of the other side's turn (tap the screen) */
+  private ff = false;
 
   constructor(
     private app: App,
@@ -279,7 +281,7 @@ export class BattleScreen implements Screen {
     if (!this.ready) return;
     this.rig.update(dt);
     this.board.update(dt);
-    for (const sp of this.sprites.values()) sp.update(dt * (settings.walk === 2 ? 1.6 : 1), this.rig.camera);
+    for (const sp of this.sprites.values()) sp.update(dt * (settings.walk === 2 ? 1.6 : 1) * (this.ff ? 2.5 : 1), this.rig.camera);
     this.applyLighting();
     this.app.pipeline.render(this.scene, this.rig.camera, this.board.sky);
     this.drive(dt);
@@ -301,7 +303,7 @@ export class BattleScreen implements Screen {
     if (c === 'ai') {
       this.aiTimer -= dt;
       if (this.aiTimer > 0) return;
-      this.aiTimer = 0.15;
+      this.aiTimer = this.ff ? 0.02 : 0.12;
       const a = chooseAction(this.state, this.info.ai, this.state.rng ^ this.log.length);
       void this.commit(a, false);
     } else if (c === 'remote') {
@@ -391,6 +393,11 @@ export class BattleScreen implements Screen {
         const end = e.path[e.path.length - 1];
         const endW = this.board.worldOf(end.x, end.y);
         if (sp.group.position.distanceTo(endW) < 0.05) return;
+        // moves hidden by the fog of war: no animation
+        if (this.controller(u.team) !== 'human' && !this.seenByViewer(u)) {
+          sp.place(endW);
+          return;
+        }
         if (e.path.length < 2) {
           sp.place(endW);
           return;
@@ -537,7 +544,7 @@ export class BattleScreen implements Screen {
   }
 
   private fast(ms: number) {
-    return settings.scenes === 'fast' ? ms / 2 : ms;
+    return (settings.scenes === 'fast' ? ms / 2 : ms) / (this.ff ? 3 : 1);
   }
 
   // ---------------------------------------------------------------------------------- combat
@@ -595,7 +602,7 @@ export class BattleScreen implements Screen {
       this.top.style.visibility = 'hidden';
       try {
         this.fight = await FightScene.create(this.app.pipeline, overlay, side(a, e.fc.a), side(d, e.fc.d), {
-          speed: scenes === 'fast' ? 2 : 1,
+          speed: this.ff ? 3 : scenes === 'fast' ? 2 : 1,
           critFx: settings.critFx,
           terrain: terrainAt(s, d.x, d.y),
           sky: this.board.sky,
@@ -685,6 +692,7 @@ export class BattleScreen implements Screen {
     const key = s.turn * 2 + s.phase;
     if (key === this.lastPhaseShown || s.winner !== null) return;
     this.lastPhaseShown = key;
+    if (this.controller() === 'human') this.ff = false;
     this.syncSprites();
     // hotseat: hide the map until the next player is ready
     if (this.info.mode === 'local' && this.controller() === 'human') {
@@ -799,6 +807,12 @@ export class BattleScreen implements Screen {
 
   private tapScreen(cx: number, cy: number) {
     if (!this.ready || this.covered || this.fight) return;
+    if (this.controller() !== 'human' && this.state.winner === null) {
+      // the other side's turn: a tap speeds it up
+      if (!this.ff) this.toast('Avance rapide ▶▶', 900);
+      this.ff = true;
+      return;
+    }
     const p = this.pickTile(cx, cy);
     this.showCursor = false;
     if (p) this.tapTile(p);
@@ -1315,7 +1329,7 @@ export class BattleScreen implements Screen {
     switch (m.m) {
       case 'busy': {
         const c = this.controller();
-        kids.push(h('div', { class: 'bt-hint' }, c === 'ai' ? `L'ordinateur réfléchit… (${this.teamName(s.phase)})` : c === 'remote' ? `Au tour de ${this.teamName(s.phase)}… (en ligne)` : '…'));
+        kids.push(h('div', { class: 'bt-hint' }, c === 'ai' ? `L'ordinateur joue… ${this.ff ? '▶▶' : '(touche l’écran pour accélérer)'}` : c === 'remote' ? `Au tour de ${this.teamName(s.phase)}… (en ligne)` : '…'));
         break;
       }
       case 'idle': {
