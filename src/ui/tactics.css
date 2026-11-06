@@ -1376,3 +1376,108 @@
 .lobby-status .ok {
   color: #6aff8a;
 }
+
+/* ------------------------------------------------------------------ campaign */
+.cp-title {
+  font: 16px var(--arcade);
+  color: var(--orange2);
+  text-align: center;
+}
+.cp-mode {
+  font-size: 9px;
+  color: var(--muted);
+  text-align: center;
+}
+.cp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: min(720px, 100%);
+}
+.cp-ch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 10px;
+  background: var(--panel);
+  border-left: 4px solid var(--line);
+  opacity: 0.55;
+  font-size: 9px;
+}
+.cp-ch canvas {
+  width: 36px;
+  image-rendering: pixelated;
+  border-radius: 3px;
+}
+.cp-ch > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cp-ch small {
+  color: var(--muted);
+  font-size: 8px;
+}
+.cp-ch.done {
+  opacity: 0.85;
+  border-color: #3ab860;
+}
+.cp-ch.cur {
+  opacity: 1;
+  border-color: var(--orange);
+}
+.cp-crew {
+  width: min(720px, 100%);
+}
+.cp-units {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: 4px;
+}
+.cp-unit {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  font-size: 8px;
+}
+.cp-unit small {
+  color: var(--muted);
+  font-size: 7px;
+}
+.talk-screen {
+  justify-content: space-between !important;
+}
+.talk-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+  text-shadow: 2px 2px 0 #000;
+}
+.talk-head b {
+  font: 16px var(--arcade);
+  color: var(--orange2);
+}
+.talk-head small {
+  font-size: 9px;
+  line-height: 1.5;
+}
+.talk-skip {
+  position: absolute;
+  right: 12px;
+  bottom: calc(max(16px, env(safe-area-inset-bottom)) + 150px);
+}
+.talk-head {
+  padding-top: 8px;
+}
+.talk-line.narr {
+  background: #11132a;
+  color: var(--text);
+  border-color: var(--line);
+  font-style: italic;
+}

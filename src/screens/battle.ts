@@ -736,7 +736,8 @@ export class BattleScreen implements Screen {
       await this.cover();
     }
     this.rig.setYaw(this.viewYaw());
-    const el = h('div', { class: 'bt-banner t' + s.phase }, h('b', null, `PHASE ${this.teamName(s.phase)}`), h('span', null, `TOUR ${s.turn}`));
+    const who = this.controller() === 'human' ? (this.info.mode === 'local' ? 'À VOUS !' : 'À TOI !') : this.controller() === 'ai' ? 'L’ORDI JOUE' : 'À TON POTE';
+    const el = h('div', { class: 'bt-banner t' + s.phase }, h('b', null, this.teamName(s.phase)), h('span', null, `TOUR ${s.turn} · ${who}`));
     this.layer.append(el);
     audio.sfx('roundBell', { volume: 0.6 });
     await wait(1100);

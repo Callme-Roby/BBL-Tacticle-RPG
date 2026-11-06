@@ -63,6 +63,8 @@ export interface Objective {
   turns: number;
   /** defend / escape: the team that attacks (the other one defends) */
   attacker: Team;
+  /** campaign: this team loses if its chef falls */
+  lord?: Team;
 }
 
 /** support state of a pair: level reached and points accumulated (kept from battle to battle) */
@@ -1061,6 +1063,14 @@ export function checkEnd(s: BattleState, ev: BattleEvent[]) {
     const foe = (1 - t) as Team;
     if (alive(foe).length === 0 && !(o.kind === 'escape' && foe === o.attacker && s.units.some((u) => u.team === foe && u.escaped))) {
       win(s, t, `${name(t)} a battu toute l'équipe adverse !`, ev);
+      return;
+    }
+  }
+  if (o.lord !== undefined) {
+    const chef = s.units.find((u) => u.team === o.lord && u.leader);
+    if (chef && !chef.alive) {
+      const t = (1 - o.lord) as Team;
+      win(s, t, `${chef.name} est tombé… la bande doit se replier.`, ev);
       return;
     }
   }

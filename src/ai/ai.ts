@@ -100,7 +100,7 @@ function unitValue(s: BattleState, u: Unit): number {
   const c = classOf(u);
   let v = 20 + u.level * 0.5 + (c.tier === 2 ? 8 : 0);
   if (usableStaves(u).length && !usableWeapons(u).length) v += 14;
-  if (u.leader && (s.objective.kind === 'boss' || s.objective.kind === 'seize' || s.objective.kind === 'escape')) v += 120;
+  if (u.leader && (s.objective.kind === 'boss' || s.objective.kind === 'seize' || s.objective.kind === 'escape' || s.objective.lord === u.team)) v += 120;
   // its punch
   const w = usableWeapons(u)[0];
   if (w !== undefined) v += (u.stats.pow + item(u.items[w].id).mt) * 0.6;
@@ -260,6 +260,8 @@ function bestPlanFor(s: BattleState, ctx: Context, u: Unit): Plan | null {
     const y = (i - x) / s.w;
     const o = unitAt(s, x, y);
     if (o && o.uid !== u.uid) continue;
+    // guards never leave their post (they strike what comes in range)
+    if (u.ai === 'guard' && (x !== u.x || y !== u.y)) continue;
     dests.push({ x, y });
   }
   const c = classOf(u);
@@ -268,7 +270,7 @@ function bestPlanFor(s: BattleState, ctx: Context, u: Unit): Plan | null {
   const defending = (s.objective.kind === 'defend' || s.objective.kind === 'escape') && s.objective.attacker !== u.team;
   const patience = defending ? 1 : Math.max(0.2, 1 - (s.turn - 1) * 0.15);
   const waitRisk = riskW * patience;
-  const careful = u.leader && s.objective.kind !== 'rout' ? 2 : 1;
+  const careful = u.leader && (s.objective.kind !== 'rout' || s.objective.lord === u.team) ? 2.5 : 1;
   const healerOnly = usableStaves(u).length > 0 && usableWeapons(u).length === 0;
   const plans: Plan[] = [];
   const noise = () => (ctx.level === 'easy' ? (ctx.rand() - 0.5) * 18 : 0);
@@ -385,7 +387,11 @@ function goalTiles(s: BattleState, ctx: Context, u: Unit): Point[] {
   const o = s.objective;
   if (o.kind === 'seize' && u.leader) {
     const th = s.thrones[(1 - u.team) as Team];
-    if (th) return [th];
+    // the chef walks to the throne once it is free; until then it stays with the group
+    const guarded = th && ctx.foes.some((e) => dist(e, th) <= 1);
+    if (th && !guarded) return [th];
+    const mates = ctx.allies.filter((a) => a.uid !== u.uid);
+    if (mates.length) return mates.map((a) => ({ x: a.x, y: a.y }));
   }
   if (o.kind === 'escape' && o.attacker === u.team) {
     if (s.escapes.length) return s.escapes;
